@@ -22,9 +22,10 @@ namespace CompiladorFinal
         bool condicionIf = false, condicionWhile = false, condicionElse = false, saltoPendiente = false;
         Polish nuevoPolish;
 
-
+        //controlador principal
         public int bloque(List<Token> listaToken, int posicion, int vuelta)
         {
+            //reinicio
             if (vuelta == 0)
             {
                 listaVariables.Clear();
@@ -38,11 +39,13 @@ namespace CompiladorFinal
                 totalT = 0;
 
             }
+            //int, double, string, char
             if (listaToken[posicion].ValorToken == -55 || listaToken[posicion].ValorToken == -56 || listaToken[posicion].ValorToken == -57 || listaToken[posicion].ValorToken == -58)
             {
                 tokenTipo = listaToken[posicion].ValorToken;
                 posicion = crearVariable(listaToken, posicion);
             }
+            //id
             else if (listaToken[posicion].ValorToken == -1)
             {
                 int posicionActual = posicion;
@@ -50,20 +53,24 @@ namespace CompiladorFinal
                 agregarPostfijo(listaToken, posicionActual);
                 MandaraPolish(listaToken, posicionActual); 
             }
+            //if - si
             else if (listaToken[posicion].ValorToken == -60)
             {
                 posicion = condicionaIf(listaToken, posicion);
             }
+            //while - mientras
             else if (listaToken[posicion].ValorToken == -63)
             {
                 posicion = condicionalWhile(listaToken, posicion);
             }
+            //read
             else if (listaToken[posicion].ValorToken == -81)
             {
                 int posicionActual = posicion;
                 posicion = lineaR(listaToken, posicion);
                 MandaraPolish(listaToken, posicionActual);
             }
+            //write
             else if (listaToken[posicion].ValorToken == -82)
             {
                 int posicionActual = posicion;
@@ -76,11 +83,14 @@ namespace CompiladorFinal
 
         public int crearVariable(List<Token> listaToken, int posicion)
         {
+            //;
             while (listaToken[posicion].ValorToken != -31)
             {
                 posicion++;
+                //id - ,(coma)
                 if (listaToken[posicion].ValorToken == -1 || listaToken[posicion].ValorToken == -41)
                 {
+                    //id
                     if (listaToken[posicion].ValorToken == -1)
                     {
                         int iAux = 0;
@@ -109,6 +119,7 @@ namespace CompiladorFinal
                     }
 
                 }
+                //int, double, string, char,{, si, para, hacer, mientras, sino, switch, read, write, id
                 else if (listaToken[posicion].ValorToken == -55 || listaToken[posicion].ValorToken == -56 || listaToken[posicion].ValorToken == -57 
                     || listaToken[posicion].ValorToken == -58 || listaToken[posicion].ValorToken == -29 || listaToken[posicion].ValorToken == -60 
                     || listaToken[posicion].ValorToken == -61 || listaToken[posicion].ValorToken == -62 || listaToken[posicion].ValorToken == -63 
@@ -128,16 +139,19 @@ namespace CompiladorFinal
         {
             iteradorIF++;
             posicion++;
+            //(
             if (listaToken[posicion].ValorToken == -27)
             {
                 posicion++;
                 condicionIf = true;
                 posicion = verificarCondicional(listaToken, posicion);
+                //{
                 if (listaToken[posicion].ValorToken == -29)
                 {
                     nuevoPolish = new Polish() { Lexema = "BRF", Direccionamiento = direccion, Salto = null };
                     listaPolish.Add(nuevoPolish);
                     posicion++;
+                    //}
                     while (listaToken[posicion].ValorToken != -30)
                     {              
                         int posicionActual = bloque(listaToken, posicion, vueltaAux);
@@ -146,6 +160,7 @@ namespace CompiladorFinal
                     saltoPendiente = true;
                     saltoActual = "A" + iteradorIF;
                     posicion++;
+                    //sino - else
                     if (listaToken[posicion].ValorToken == -66)
                     {
                         
@@ -154,11 +169,13 @@ namespace CompiladorFinal
                         listaPolish.Add(nuevoPolish);
                         condicionElse = true;
                         posicion++;
+                        //{
                         if (listaToken[posicion].ValorToken == -29)
                         {
                             saltoPendiente = true;
                             
                             posicion++;
+                            //}
                             while (listaToken[posicion].ValorToken != -30)
                             {
                                 int posicionActual = bloque(listaToken, posicion, vueltaAux);
@@ -180,6 +197,7 @@ namespace CompiladorFinal
                 }
             }
             int posAux = posicion;
+            //}
             while (listaToken[posicion].ValorToken == -30 && posAux + 1 == listaToken.Count && saltoPendiente == true)
             {
                 if (condicionElse == true)
@@ -211,17 +229,20 @@ namespace CompiladorFinal
             iteradorWhile++;
             int itWhileAux = iteradorWhile;
             posicion++;
+            //(
             if (listaToken[posicion].ValorToken == -27)
             {
                 condicionWhile = true;
                 posicion++;
                 posicion = verificarCondicional(listaToken, posicion);
+                //{
                 if (listaToken[posicion].ValorToken == -29)
                 {
                     saltoActual = "W" + iteradorWhile;
                     nuevoPolish = new Polish() { Lexema = "BRF", Direccionamiento = saltoActual, Salto = null };
                     listaPolish.Add(nuevoPolish);
                     posicion++;
+                    //}
                     while (listaToken[posicion].ValorToken != -30)
                     {
                         int posicionActual = bloque(listaToken, posicion, vueltaAux);
@@ -244,6 +265,7 @@ namespace CompiladorFinal
             }
 
             int posAux = posicion;
+            //}
             while (listaToken[posicion].ValorToken == -30 && posAux + 2 == listaToken.Count && saltoPendiente == true)
             {
                 if (condicionWhile == true)
@@ -264,6 +286,7 @@ namespace CompiladorFinal
             return posicion + 1;
         }
 
+        //Este es una pela bastante confuso de polish xd
         internal int verificarCondicional(List<Token> listaToken, int posicion)
         {
             if (condicionIf == true)
@@ -274,9 +297,10 @@ namespace CompiladorFinal
             {
                 direccion = "X" + iteradorWhile;
             }
-            
+            //id, entero, decimal, cadena, caracter
             if (listaToken[posicion].ValorToken == -1 || listaToken[posicion].ValorToken == -2 || listaToken[posicion].ValorToken == -3 || listaToken[posicion].ValorToken == -4 || listaToken[posicion].ValorToken == -5)
             {
+                //id
                 if (listaToken[posicion].ValorToken == -1)
                 {
                     verificarVariablesDefinidas(listaToken, posicion);
@@ -286,14 +310,16 @@ namespace CompiladorFinal
                 if (condicionIf == true && condicionElse == true && saltoPendiente == true) { nuevoPolish = new Polish() { Lexema = listaToken[posicion].Lexema, Direccionamiento = null, Salto = saltoActual }; }
                 listaPolish.Add(nuevoPolish);
                 posicion++;
+                //)
                 while (listaToken[posicion].ValorToken != -28)
                 {
-
+                    //==, !=, <, >, <=, >=
                     if (listaToken[posicion].ValorToken == -19 || listaToken[posicion].ValorToken == -20 || listaToken[posicion].ValorToken == -21 ||
                         listaToken[posicion].ValorToken == -22 || listaToken[posicion].ValorToken == -23 || listaToken[posicion].ValorToken == -24)
                     {
                         string operadorAux = listaToken[posicion].Lexema;
                         posicion++;
+                        //id, entero, decimal, cadena, caracter
                         if (listaToken[posicion].ValorToken == -1 || listaToken[posicion].ValorToken == -2 || listaToken[posicion].ValorToken == -3 || listaToken[posicion].ValorToken == -4 || listaToken[posicion].ValorToken == -5)
                         {
                             nuevoPolish = new Polish() { Lexema = listaToken[posicion].Lexema, Direccionamiento = null, Salto = null };
@@ -303,6 +329,7 @@ namespace CompiladorFinal
                             posicion++;
                         }
                     }
+                    //{
                     if (listaToken[posicion].ValorToken == -29)
                     {
                         listaError.Add(ManejoErroresSintactico(-508, listaToken[posicion].Linea));
@@ -318,31 +345,38 @@ namespace CompiladorFinal
             verificarVariablesDefinidas(listaToken, posicion);
 
             posicion++;
-
+            //=
             if (listaToken[posicion].ValorToken == -37)
             {
 
                 posicion++;
+                //id, entero, decimal, cadena, caracter
                 if (listaToken[posicion].ValorToken == -1 || listaToken[posicion].ValorToken == -2 || listaToken[posicion].ValorToken == -3 || listaToken[posicion].ValorToken == -4 || listaToken[posicion].ValorToken == -5)
                 {
+                    //id
                     if (listaToken[posicion].ValorToken == -1)
                     {
                         verificarVariablesDefinidas(listaToken, posicion);
                     }
 
                     posicion++;
+                    //;
                     while (listaToken[posicion].ValorToken != -31)
                     {
+                        //+, -, *, /
                         if (listaToken[posicion].ValorToken == -6 || listaToken[posicion].ValorToken == -7 || listaToken[posicion].ValorToken == -8 || listaToken[posicion].ValorToken == -9)
                         {
 
                             posicion++;
+                            // identificador, num entero, num decimal, string, char
                             if (listaToken[posicion].ValorToken == -1 || listaToken[posicion].ValorToken == -2 || listaToken[posicion].ValorToken == -3 || listaToken[posicion].ValorToken == -4 || listaToken[posicion].ValorToken == -5)
                             {
+                                //id
                                 if (listaToken[posicion].ValorToken == -1)
                                 {
 
                                 }
+                                //num entero, num decimal, string, char
                                 else if (listaToken[posicion].ValorToken == -2 || listaToken[posicion].ValorToken == -3 || listaToken[posicion].ValorToken == -4 || listaToken[posicion].ValorToken == -5)
                                 {
 
@@ -356,6 +390,7 @@ namespace CompiladorFinal
                             }
                         }
                         
+                        //int, char, double, string, {, si, para, hacer, mientras, sino, switch, read, write
                         else if (listaToken[posicion].ValorToken == -55 || listaToken[posicion].ValorToken == -56 || listaToken[posicion].ValorToken == -57 
                             || listaToken[posicion].ValorToken == -58 || listaToken[posicion].ValorToken == -29 || listaToken[posicion].ValorToken == -60 
                             || listaToken[posicion].ValorToken == -61 || listaToken[posicion].ValorToken == -62 || listaToken[posicion].ValorToken == -63 
@@ -376,16 +411,20 @@ namespace CompiladorFinal
         internal int lineaR(List<Token> listaToken, int posicion)
         {
             posicion++;
+            //(
             if (listaToken[posicion].ValorToken == -27)
             {
                 posicion++;
+                //id, entero, decimal, cadena, caracter
                 if (listaToken[posicion].ValorToken == -1 || listaToken[posicion].ValorToken == -2 || listaToken[posicion].ValorToken == -3 || listaToken[posicion].ValorToken == -4 || listaToken[posicion].ValorToken == -5)
                 {
                     stringR = listaToken[posicion].Lexema;
                     posicion++;
+                    //)
                     if (listaToken[posicion].ValorToken == -28)
                     {
                         posicion++;
+                        //;
                         if (listaToken[posicion].ValorToken == -31)
                         {
                         }
@@ -402,16 +441,20 @@ namespace CompiladorFinal
         internal int lineaW(List<Token> listaToken, int posicion)
         {
             posicion++;
+            //(
             if (listaToken[posicion].ValorToken == -27)
             {
                 posicion++;
+                //id, entero, decimal, cadena, caracter
                 if (listaToken[posicion].ValorToken == -1 || listaToken[posicion].ValorToken == -2 || listaToken[posicion].ValorToken == -3 || listaToken[posicion].ValorToken == -4 || listaToken[posicion].ValorToken == -5)
                 {
                     stringW = listaToken[posicion].Lexema;
                     posicion++;
+                    //)
                     if (listaToken[posicion].ValorToken == -28)
                     {
                         posicion++;
+                        //;
                         if (listaToken[posicion].ValorToken == -31)
                         {
                         }
@@ -456,7 +499,6 @@ namespace CompiladorFinal
                 listaError.Add(ManejoErroresSemantico(-511, listaToken[posicion].Linea));
             }
         }
-
 
         //Errores
         public Error ManejoErroresSintactico(int estado, int linea)

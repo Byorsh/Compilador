@@ -21,7 +21,8 @@ namespace CompiladorFinal
         Caracter,
         OperadorRelacional,
         NADA,
-        Comentario
+        Comentario,
+        ComentarioLargo
     }
     public class Token
     {
