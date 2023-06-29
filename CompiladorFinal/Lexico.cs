@@ -508,8 +508,11 @@ namespace CompiladorFinal
                 {
                     if (lexema.Length > 1 && estado != -4 && estado != -5 && estado != -17 && estado != -10 && estado != -18 && estado != -11 && estado != -12 && estado != -13 && estado != -20 && estado != -19 && estado != -23 && estado != -24 && estado != -15 && estado != -16)
                     {
-                        lexema = lexema.Remove(lexema.Length - 1);
-                        puntero--;
+                        if (estado != -51)
+                        {
+                            lexema = lexema.Remove(lexema.Length - 1);
+                            puntero--;
+                        }
                     }
 
 

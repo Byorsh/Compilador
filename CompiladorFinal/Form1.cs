@@ -138,5 +138,10 @@ namespace CompiladorFinal
             mensaje_lbl.Visible = true;
             mensaje_lbl.Text = "Codigo ensamblador generado";
         }
+
+        private void Polishdgv_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }
