@@ -50,8 +50,13 @@ namespace CompiladorFinal
             {
                 int posicionActual = posicion;
                 posicion = verificarOperador(listaToken, posicion);
-                agregarPostfijo(listaToken, posicionActual);
-                MandaraPolish(listaToken, posicionActual); 
+                
+
+                if (listaError.Count == 0)
+                {
+                    agregarPostfijo(listaToken, posicionActual);
+                    MandaraPolish(listaToken, posicionActual);
+                }
             }
             //if - si
             else if (listaToken[posicion].ValorToken == -60)
@@ -68,14 +73,20 @@ namespace CompiladorFinal
             {
                 int posicionActual = posicion;
                 posicion = lineaR(listaToken, posicion);
-                MandaraPolish(listaToken, posicionActual);
+                if (listaError.Count == 0)
+                {
+                    MandaraPolish(listaToken, posicionActual);
+                }
             }
             //write
             else if (listaToken[posicion].ValorToken == -82)
             {
                 int posicionActual = posicion;
                 posicion = lineaW(listaToken, posicion);
-                MandaraPolish(listaToken, posicionActual);
+                if (listaError.Count == 0)
+                {
+                    MandaraPolish(listaToken, posicionActual);
+                }
             }
             vueltaAux = vuelta + 1;
             return posicion;
@@ -390,11 +401,11 @@ namespace CompiladorFinal
                             }
                         }
                         
-                        //int, char, double, string, {, si, para, hacer, mientras, sino, switch, read, write
+                        //int, char, double, string, {, }, si, para, hacer, mientras, sino, switch, read, write
                         else if (listaToken[posicion].ValorToken == -55 || listaToken[posicion].ValorToken == -56 || listaToken[posicion].ValorToken == -57 
                             || listaToken[posicion].ValorToken == -58 || listaToken[posicion].ValorToken == -29 || listaToken[posicion].ValorToken == -60 
                             || listaToken[posicion].ValorToken == -61 || listaToken[posicion].ValorToken == -62 || listaToken[posicion].ValorToken == -63 
-                            || listaToken[posicion].ValorToken == -66 || listaToken[posicion].ValorToken == -77 || listaToken[posicion].ValorToken == -78 || listaToken[posicion].ValorToken == -79)
+                            || listaToken[posicion].ValorToken == -66 || listaToken[posicion].ValorToken == -77 || listaToken[posicion].ValorToken == -78 || listaToken[posicion].ValorToken == -79 || listaToken[posicion].ValorToken == -30)
                         {
                             listaError.Add(ManejoErroresSintactico(-507, listaToken[posicion].Linea));
                             posicion--;
@@ -431,6 +442,7 @@ namespace CompiladorFinal
                         else
                         {
                             listaError.Add(ManejoErroresSintactico(-507, listaToken[posicion].Linea));
+                            posicion--;
                         }
                     }
                 }
@@ -461,6 +473,7 @@ namespace CompiladorFinal
                         else
                         {
                             listaError.Add(ManejoErroresSintactico(-507, listaToken[posicion].Linea));
+                            posicion--;
                         }
 
                     }
@@ -693,10 +706,12 @@ namespace CompiladorFinal
                 listaAuxPostfix.RemoveAt(i);
             }
             string postfijo = "";
-            for (int i = 0; i < listaPostfixToken.Count; i++)
+            for (int i = 0; i < listaPostfix.Count; i++)
             {
-                postfijo += listaPostfixToken.ElementAt(i).ToString() + " | ";
+                //postfijo += listaPostfix.ElementAt(i).ToString() + " | ";
+                
             }
+            //MessageBox.Show(postfijo);
 
         }
 
