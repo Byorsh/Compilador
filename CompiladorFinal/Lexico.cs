@@ -48,7 +48,6 @@ namespace CompiladorFinal
 /* q20 */   {  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  21 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 , -500, -500, },
 /* q21 */   {  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 , -51 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 ,  20 , -500, -500, }
 
-
         };
 
         /// <summary>
@@ -70,6 +69,8 @@ namespace CompiladorFinal
         {
             switch (lexema)
             {
+                case "bool":
+                    return -54;
                 case "int":
                     return -55;
                 case "char":
@@ -378,6 +379,8 @@ namespace CompiladorFinal
                     return TipoToken.Comentario;
                 case -51:
                     return TipoToken.ComentarioLargo;
+                case -54:
+                    return TipoToken.PalabraReservada;
                 case -55:
                     return TipoToken.PalabraReservada;
                 case -56:
