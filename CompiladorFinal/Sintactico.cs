@@ -781,118 +781,163 @@ namespace CompiladorFinal
         };
 
         public int[,] mayorQueM = { 
-         //      int  || real || string ||  bool
-            {    205  ,   205  ,   -512  ,   -512,},
-            {    205  ,   205  ,   -512  ,   -512,},
-            {    -512  ,   -512  ,   -512  ,   -512,},
-            {    -512  ,   -512  ,   -512  ,   -512,}
+         //      int  || char || string || real ||  bool
+         //      int-2  || char-5 || string-4 || real-3 || bool-54
+            {    -2   ,  -512  ,   -512  ,   -512  ,   -512,},
+            {    -512 ,  -512  ,   -512  ,   -512  ,   -512,},
+            {    -512 ,  -512  ,   -512  ,   -512  ,   -512,},
+            {    -3   ,  -512  ,   -512  ,   -3    ,   -512,},
+            {    -512 ,  -512  ,   -512  ,   -512  ,   -512}
         };
 
         public int[,] menorQueM = { 
-         //      int  || real || string ||  bool
-            {    205  ,   205  ,   -512  ,   -512,},
-            {    205  ,   205  ,   -512  ,   -512,},
-            {    -512  ,   -512  ,   -512  ,   -512,},
-            {    -512  ,   -512  ,   -512  ,   -512,}
+         //      int  || char || string || real ||  bool
+         //      int-2  || char-5 || string-4 || real-3 || bool-54
+
+            {    -2    ,   -512  ,   -512  ,   -512  ,   -512,},
+            {    -512  ,   -512  ,   -512  ,   -512  ,   -512,},
+            {    -512  ,   -512  ,   -512  ,   -512  ,   -512,},
+            {    -3    ,   -512  ,   -512  ,   -3    ,   -512,},
+            {    -512  ,   -512  ,   -512  ,   -512  ,   -512}
         };
 
         public int[,] mayorIgualM = { 
-         //      int  || real || string ||  bool
-            {    205  ,   205  ,   -512  ,   -512,},
-            {    205  ,   205  ,   -512  ,   -512,},
-            {    -512  ,   -512  ,   -512  ,   -512,},
-            {    -512  ,   -512  ,   -512  ,   -512,}
+         //      int  || char || string || real ||  bool
+         //      int-2  || char-5 || string-4 || real-3 || bool-54
+            {    -2    ,   -512  ,   -512  ,   -512  ,   -512,},
+            {    -512  ,   -512  ,   -512  ,   -512  ,   -512,},
+            {    -512  ,   -512  ,   -512  ,   -512  ,   -512,},
+            {    -3    ,   -512  ,   -512  ,   -3    ,   -512,},
+            {    -512  ,   -512  ,   -512  ,   -512  ,   -512}
         };
 
         public int[,] menorIgualM = { 
-         //      int  || real || string ||  bool
-            {    205  ,   205  ,   -512  ,   -512,},
-            {    205  ,   205  ,   -512  ,   -512,},
-            {    -512  ,   -512  ,   -512  ,   -512,},
-            {    -512  ,   -512  ,   -512  ,   -512,}
+         //      int  || char || string || real ||  bool
+         //      int-2  || char-5 || string-4 || real-3 || bool-54
+            {    -2    ,   -512  ,   -512  ,   -512  ,   -512,},
+            {    -512  ,   -512  ,   -512  ,   -512  ,   -512,},
+            {    -512  ,   -512  ,   -512  ,   -512  ,   -512,},
+            {    -3    ,   -512  ,   -512  ,   -3    ,   -512,},
+            {    -512  ,   -512  ,   -512  ,   -512  ,   -512}
         };
 
         public int[,] igualM = { 
-         //      int  || real || string ||  bool
-            {    205  ,   205  ,   -512  ,   -512,},
-            {    205  ,   205  ,   -512  ,   -512,},
-            {    -512  ,   -512  ,   205  ,   -512,},
-            {    -512  ,   -512  ,   -512  ,   -512,}
+         //      int  || char || string || real ||  bool
+         //      int-2  || char-5 || string-4 || real-3 || bool-54
+            {    -2    ,   -512  ,   -512  ,   -512  ,   -512,},
+            {    -512  ,   -5    ,   -512  ,   -512  ,   -512,},
+            {    -512  ,   -4    ,   -4    ,   -512  ,   -512,},
+            {    -3    ,   -512  ,   -512  ,   -3    ,   -512,},
+            {    -512  ,   -512  ,   -512  ,   -512  ,   -54}
         };
 
-        public int verificarTipos(int op1, int op2, int operador)
+        public void verificarTipos(List<int> listaPostfijoT, List<string> listaPostfijoL)
         {
-            int tipo = 0;
-            switch (op1)
+            int tokenMain, tokenAux, operacion;
+            List<int> listaTokensAux = new List<int>();
+            for (int i = 0; i < listaPostfijoT.Count; i++)
             {
+                tokenMain = listaPostfijoT.ElementAt(i);
+                if (listaPostfijoT.ElementAt(i) == -1)
+                {
+                    for (int j = 0; j < listaVariables.Count; j++)
+                    {
+                        if (listaPostfijoL.ElementAt(i) == listaVariables[j].Lexema)
+                        {
+                            listaTokensAux.Add(listaVariables[j].TipoVariable);
+                        }
+                    }
+                }
+                else if (listaPostfijoT.ElementAt(i) <= -2 && listaPostfijoT.ElementAt(i) >= -5)
+                {
+                    listaTokensAux.Add(tokenMain);
+                }
+                else if (listaPostfijoT.ElementAt(i) == -54)
+                {
+                    listaTokensAux.Add(tokenMain);
+                }
+                else
+                {
+                    tokenMain = listaTokensAux.ElementAt(listaTokensAux.Count - 1);
+                    listaTokensAux.RemoveAt(listaTokensAux.Count - 1);
+                    tokenAux = listaTokensAux.ElementAt(listaTokensAux.Count - 1);
+                    listaTokensAux.RemoveAt(listaTokensAux.Count - 1);
+                    operacion = listaPostfijoT.ElementAt(i);
+
+                    switch(operacion)
+                    {
+                        case -6:
+                            tokenMain = sumaM[obtenerPosicion(tokenMain), obtenerPosicion(tokenAux)];
+                            break;
+                        case -7:
+                            tokenMain = restaM[obtenerPosicion(tokenMain), obtenerPosicion(tokenAux)];
+                            break;
+                        case -8:
+                            tokenMain = multiplicacionM[obtenerPosicion(tokenMain), obtenerPosicion(tokenAux)];
+                            break;
+                        case -9:
+                            tokenMain = divisionM[obtenerPosicion(tokenMain), obtenerPosicion(tokenAux)];
+                            break;
+                        case -37:
+                            tokenMain = asignacionM[obtenerPosicion(tokenMain), obtenerPosicion(tokenAux)];
+                            break;
+                        case -20:
+                            tokenMain = diferenteM[obtenerPosicion(tokenMain), obtenerPosicion(tokenAux)];
+                            break;
+                        case -21:
+                            tokenMain = menorQueM[obtenerPosicion(tokenMain), obtenerPosicion(tokenAux)];
+                            break;
+                        case -22:
+                            tokenMain = mayorQueM[obtenerPosicion(tokenMain), obtenerPosicion(tokenAux)];
+                            break;
+                        case -23:
+                            tokenMain = menorIgualM[obtenerPosicion(tokenMain), obtenerPosicion(tokenAux)];
+                            break;
+                        case -24:
+                            tokenMain = mayorIgualM[obtenerPosicion(tokenMain), obtenerPosicion(tokenAux)];
+                            break;
+                        case -19:
+                            tokenMain = igualM[obtenerPosicion(tokenMain), obtenerPosicion(tokenAux)];
+                            break;
+                        default:
+                            listaError.Add(ManejoErroresSintactico(-500, listaToken[posicion].Linea));
+                            break;
+                    }
+
+                    if (tokenMain <= -500)
+                    {
+                        listaError.Add(ManejoErroresSintactico(-512, listaToken[posicion].Linea));
+                        break;
+                    }
+                }
+            }
+        }
+
+        public int obtenerPosicion(int op)
+        {
+            switch (op) {
                 case -2:
-                    op1 = 0;
-                    break;
+                    return 1;
+                case -55:
+                    return 1;
                 case -3:
-                    op1 = 1;
-                    break;
-                case -4:
-                    op1 = 2;
-                    break;
+                    return 2;
+                case -57:
+                    return 2;
+                case -4: 
+                    return 3;
+                case -58:
+                    return 3;
                 case -5:
-                    op1 = 3;
-                    break;
+                    return 4;
+                case -56:
+                    return 4;
+                case -54:
+                    return 5;
+                default:
+                    return 0;
+                    
             }
-            switch (op2)
-            {
-                case -2:
-                    op1 = 0;
-                    break;
-                case -3:
-                    op1 = 1;
-                    break;
-                case -4:
-                    op1 = 2;
-                    break;
-                case -5:
-                    op1 = 3;
-                    break;
-            }
-
-
-            switch (operador)
-            {
-                case -6:
-                    tipo = sumaM[op1, op2];
-                    break;
-                case -7:
-                    tipo = restaM[op1, op2];
-                    break;
-                case -8:
-                    tipo = multiplicacionM[op1, op2];
-                    break;
-                case -9:
-                    tipo = divisionM[op1, op2];
-                    break;
-                case -22:
-                    tipo = mayorQueM[op1, op2];
-                    break;
-                case -24:
-                    tipo = mayorIgualM[op1, op2];
-                    break;
-                case -21:
-                    tipo = menorQueM[op1, op2];
-                    break;
-                case -23:
-                    tipo = menorIgualM[op1, op2];
-                    break;
-                case -37:
-                    tipo = igualM[op1, op2];
-                    break;
-                case -20:
-                    tipo = diferenteM[op1, op2];
-                    break;
-                case -19:
-                    tipo = asignacionM[op1, op2];
-                    break;
-
-            }
-            return tipo;
         }
 
         internal int buscarVariable(string lexema)
