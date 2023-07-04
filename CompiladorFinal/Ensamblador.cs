@@ -22,7 +22,7 @@ namespace CompiladorFinal
         {
             try
             {
-                string filename = @"C:\Users\gion3\Documents\Ith\7Semestre\Lenguajes y Automatas 2\CompiladorFinal\blue.asm";
+                string filename = @"C:\Users\Jorge Barraza\Documents\compi\CompiladorFinal\blue.asm";
                 using (StreamWriter mylogs = File.CreateText(filename))
                 {
                     cadena_ensamblador = ";/StartHeader\nINCLUDE macros.mac\nDOSSEG\n.MODEL SMALL\nSTACK 100h\n.DATA\n";

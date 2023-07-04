@@ -216,7 +216,7 @@ namespace CompiladorFinal
                     nuevoPolish = new Polish() { Lexema = "Fin Else", Direccionamiento = null, Salto = saltoActual };
                     condicionElse = false;
                 }
-                else if (condicionIf == false)
+                else if(condicionIf == false)
                 {
                     nuevoPolish = new Polish() { Lexema = "Fin If", Direccionamiento = null, Salto = "A" + iteradorIF };
                     if (iteradorIF == 1)
@@ -300,6 +300,10 @@ namespace CompiladorFinal
         //Este es una pela bastante confuso de polish xd
         internal int verificarCondicional(List<Token> listaToken, int posicion)
         {
+            int operador;
+            List<int> listaTokens = new List<int>();
+            List<string> listaLexemas = new List<string>();
+ 
             if (condicionIf == true)
             {
                 direccion = "A" + iteradorIF;
@@ -320,6 +324,11 @@ namespace CompiladorFinal
                 if (condicionIf == true) { nuevoPolish = new Polish() { Lexema = listaToken[posicion].Lexema, Direccionamiento = null, Salto = null }; }
                 if (condicionIf == true && condicionElse == true && saltoPendiente == true) { nuevoPolish = new Polish() { Lexema = listaToken[posicion].Lexema, Direccionamiento = null, Salto = saltoActual }; }
                 listaPolish.Add(nuevoPolish);
+
+                listaTokens.Add(listaToken[posicion].ValorToken);
+
+                listaLexemas.Add(listaToken[posicion].Lexema);
+
                 posicion++;
                 //)
                 while (listaToken[posicion].ValorToken != -28)
@@ -328,24 +337,45 @@ namespace CompiladorFinal
                     if (listaToken[posicion].ValorToken == -19 || listaToken[posicion].ValorToken == -20 || listaToken[posicion].ValorToken == -21 ||
                         listaToken[posicion].ValorToken == -22 || listaToken[posicion].ValorToken == -23 || listaToken[posicion].ValorToken == -24)
                     {
+                        operador = listaToken[posicion].ValorToken;
                         string operadorAux = listaToken[posicion].Lexema;
+
+                        
+
                         posicion++;
                         //id, entero, decimal, cadena, caracter
                         if (listaToken[posicion].ValorToken == -1 || listaToken[posicion].ValorToken == -2 || listaToken[posicion].ValorToken == -3 || listaToken[posicion].ValorToken == -4 || listaToken[posicion].ValorToken == -5)
                         {
+                            if (listaToken[posicion].ValorToken == -1)
+                            {
+                                verificarVariablesDefinidas(listaToken, posicion);
+                            }
                             nuevoPolish = new Polish() { Lexema = listaToken[posicion].Lexema, Direccionamiento = null, Salto = null };
                             listaPolish.Add(nuevoPolish);
                             nuevoPolish = new Polish() { Lexema = operadorAux, Direccionamiento = null, Salto = null };
                             listaPolish.Add(nuevoPolish);
+
+                            listaTokens.Add(listaToken[posicion].ValorToken);
+
+                            listaLexemas.Add(listaToken[posicion].Lexema);
+
                             posicion++;
                         }
+
+                        listaTokens.Add(operador);
+
+                        listaLexemas.Add(operadorAux);
                     }
+
                     //{
                     if (listaToken[posicion].ValorToken == -29)
                     {
                         listaError.Add(ManejoErroresSintactico(-508, listaToken[posicion].Linea));
                     }
                 }
+
+                int auxP = posicion;
+                verificarTipos(listaTokens, listaLexemas, listaToken[auxP - 1].Linea); 
             }
             totalT++;
             return posicion + 1;
@@ -385,7 +415,7 @@ namespace CompiladorFinal
                                 //id
                                 if (listaToken[posicion].ValorToken == -1)
                                 {
-
+                                    verificarVariablesDefinidas(listaToken, posicion);
                                 }
                                 //num entero, num decimal, string, char
                                 else if (listaToken[posicion].ValorToken == -2 || listaToken[posicion].ValorToken == -3 || listaToken[posicion].ValorToken == -4 || listaToken[posicion].ValorToken == -5)
@@ -705,13 +735,15 @@ namespace CompiladorFinal
                 listaAuxPostfixToken.RemoveAt(i);
                 listaAuxPostfix.RemoveAt(i);
             }
-            string postfijo = "";
+
+            verificarTipos(listaPostfixToken, listaPostfix, listatoken[posicion].Linea);
+            /*string postfijo = "";
             for (int i = 0; i < listaPostfix.Count; i++)
             {
-                //postfijo += listaPostfix.ElementAt(i).ToString() + " | ";
+                
                 
             }
-            //MessageBox.Show(postfijo);
+            //MessageBox.Show(postfijo);*/
 
         }
 
@@ -828,16 +860,20 @@ namespace CompiladorFinal
             {    -512  ,   -5    ,   -512  ,   -512  ,   -512,},
             {    -512  ,   -4    ,   -4    ,   -512  ,   -512,},
             {    -3    ,   -512  ,   -512  ,   -3    ,   -512,},
-            {    -512  ,   -512  ,   -512  ,   -512  ,   -54}
+            {    -512  ,   -512  ,   -512  ,   -512  ,   -54  }
         };
 
-        public void verificarTipos(List<int> listaPostfijoT, List<string> listaPostfijoL)
+        public void verificarTipos(List<int> listaPostfijoT, List<string> listaPostfijoL, int linea)
         {
-            int tokenMain, tokenAux, operacion;
+            int tokenMain = 0, tokenAux, operacion;
             List<int> listaTokensAux = new List<int>();
             for (int i = 0; i < listaPostfijoT.Count; i++)
             {
-                tokenMain = listaPostfijoT.ElementAt(i);
+                if (tokenMain <= -500)
+                {
+                    listaError.Add(ManejoErroresSemantico(-512, linea));
+                    break;
+                }
                 if (listaPostfijoT.ElementAt(i) == -1)
                 {
                     for (int j = 0; j < listaVariables.Count; j++)
@@ -850,11 +886,11 @@ namespace CompiladorFinal
                 }
                 else if (listaPostfijoT.ElementAt(i) <= -2 && listaPostfijoT.ElementAt(i) >= -5)
                 {
-                    listaTokensAux.Add(tokenMain);
+                    listaTokensAux.Add(listaPostfijoT.ElementAt(i));
                 }
                 else if (listaPostfijoT.ElementAt(i) == -54)
                 {
-                    listaTokensAux.Add(tokenMain);
+                    listaTokensAux.Add(listaPostfijoT.ElementAt(i));
                 }
                 else
                 {
@@ -900,14 +936,17 @@ namespace CompiladorFinal
                             tokenMain = igualM[obtenerPosicion(tokenMain), obtenerPosicion(tokenAux)];
                             break;
                         default:
-                            listaError.Add(ManejoErroresSintactico(-500, listaToken[posicion].Linea));
+                            listaError.Add(ManejoErroresSemantico(-500, linea));
                             break;
                     }
 
                     if (tokenMain <= -500)
                     {
-                        listaError.Add(ManejoErroresSintactico(-512, listaToken[posicion].Linea));
+                        listaError.Add(ManejoErroresSemantico(-512, linea));
                         break;
+                    }
+                    else{
+                        listaTokensAux.Add(tokenMain);
                     }
                 }
             }
@@ -917,23 +956,23 @@ namespace CompiladorFinal
         {
             switch (op) {
                 case -2:
-                    return 1;
+                    return 0;
                 case -55:
-                    return 1;
+                    return 0;
                 case -3:
-                    return 2;
+                    return 1;
                 case -57:
-                    return 2;
+                    return 1;
                 case -4: 
-                    return 3;
+                    return 2;
                 case -58:
-                    return 3;
+                    return 2;
                 case -5:
-                    return 4;
+                    return 3;
                 case -56:
-                    return 4;
+                    return 3;
                 case -54:
-                    return 5;
+                    return 4;
                 default:
                     return 0;
                     
