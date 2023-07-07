@@ -18,6 +18,7 @@ namespace CompiladorFinal
         public List<Polish> listaPolish = new List<Polish>();
         public int totalT = 0;
         int tokenTipo, vueltaAux, iteradorIF = 0, iteradorWhile = 0;
+        int ifList = 0, ifListSolved = 0;
         string lexema, stringR, stringW, direccion, saltoActual;
         bool condicionIf = false, condicionWhile = false, condicionElse = false, saltoPendiente = false;
         Polish nuevoPolish;
@@ -35,8 +36,12 @@ namespace CompiladorFinal
                 listaPolish.Clear();
                 iteradorIF = 0;
                 iteradorWhile = 0;
-
+                condicionIf = false;
+                condicionWhile = false;
+                condicionElse = false;
                 totalT = 0;
+                ifList = 0;
+                ifListSolved = 0;
 
             }
             //int, double, string, char
@@ -130,12 +135,12 @@ namespace CompiladorFinal
                     }
 
                 }
-                //int, double, string, char,{, si, para, hacer, mientras, sino, switch, read, write, id
+                //int, double, string, char,{, si, para, hacer, mientras, sino, switch, read, write, id, }
                 else if (listaToken[posicion].ValorToken == -55 || listaToken[posicion].ValorToken == -56 || listaToken[posicion].ValorToken == -57 
                     || listaToken[posicion].ValorToken == -58 || listaToken[posicion].ValorToken == -29 || listaToken[posicion].ValorToken == -60 
                     || listaToken[posicion].ValorToken == -61 || listaToken[posicion].ValorToken == -62 || listaToken[posicion].ValorToken == -63 
                     || listaToken[posicion].ValorToken == -66 || listaToken[posicion].ValorToken == -77 || listaToken[posicion].ValorToken == -78 
-                    || listaToken[posicion].ValorToken == -79 || listaToken[posicion].ValorToken == -1)
+                    || listaToken[posicion].ValorToken == -79 || listaToken[posicion].ValorToken == -1 || listaToken[posicion].ValorToken == -30)
                 {
                     listaError.Add(ManejoErroresSintactico(-507, listaToken[posicion].Linea));
                     posicion--;
@@ -149,6 +154,7 @@ namespace CompiladorFinal
         internal int condicionaIf(List<Token> listaToken, int posicion)
         {
             iteradorIF++;
+            ifList++;
             posicion++;
             //(
             if (listaToken[posicion].ValorToken == -27)
@@ -208,27 +214,46 @@ namespace CompiladorFinal
                 }
             }
             int posAux = posicion;
+            
             //}
-            while (listaToken[posicion].ValorToken == -30 && posAux + 1 == listaToken.Count && saltoPendiente == true)
+            while ((listaToken[posicion].ValorToken == -30 || listaToken[posicion].ValorToken == -60) && saltoPendiente == true)
             {
-                if (condicionElse == true)
+                if (posAux + 1 == listaToken.Count || listaToken[posicion].ValorToken == -60 || listaToken[posicion].ValorToken == -30 || listaToken[posicion].ValorToken == -63)
                 {
-                    nuevoPolish = new Polish() { Lexema = "Fin Else", Direccionamiento = null, Salto = saltoActual };
-                    condicionElse = false;
-                }
-                else if(condicionIf == false)
-                {
-                    nuevoPolish = new Polish() { Lexema = "Fin If", Direccionamiento = null, Salto = "A" + iteradorIF };
-                    if (iteradorIF == 1)
+                    if (condicionElse == true)
                     {
-                        saltoPendiente = false;
+                        nuevoPolish = new Polish() { Lexema = "Fin Else", Direccionamiento = null, Salto = saltoActual };
+                        listaPolish.Add(nuevoPolish);
+                        condicionElse = false;
+                    }
+                    else if (condicionIf == false || iteradorIF >= 1)
+                    {
+                        if (ifList == ifListSolved)
+                        {
+                            saltoPendiente = false;
+                        }
+                        else
+                        {
+                            nuevoPolish = new Polish() { Lexema = "Fin If", Direccionamiento = null, Salto = "A" + iteradorIF };
+                            listaPolish.Add(nuevoPolish);
+                            ifListSolved++;
+                            if (iteradorIF == 1)
+                            {
+                                saltoPendiente = false;
+                            }
+                        }
+                    }
+
+                    
+                    if (iteradorIF > 1 || condicionIf == false)
+                    {
+                        iteradorIF--;
+                        
                     }
                 }
-               
-                listaPolish.Add(nuevoPolish);
-                if (iteradorIF > 1 && condicionIf == false)
+                else
                 {
-                    iteradorIF--;
+                    saltoPendiente = false;
                 }
                 
             }
