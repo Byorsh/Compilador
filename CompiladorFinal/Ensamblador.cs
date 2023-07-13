@@ -43,26 +43,27 @@ namespace CompiladorFinal
                             case "+":
                                 op1 = listaAuxoperandos.Pop();
                                 op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\t\t\tSUMAR " + op1 + ", " + op2 + ", t" + tAct + "\n";
+                                cadena_ensamblador += "\t\t\tMOV AL, " + op1 + "\n\t\t\tADD AL, " + op2 + "\n\t\t\tMOV t" + tAct + ", AL\n";
                                 break;
                             case "-":
                                 op1 = listaAuxoperandos.Pop();
-                                op2 = listaAuxoperandos.Pop(); 
-                                cadena_ensamblador += "\t\t\tRESTA " + op1 + ", " + op2 + ", t" + tAct + "\n";
+                                op2 = listaAuxoperandos.Pop();
+                                cadena_ensamblador += "\t\t\tMOV AL, " + op1 + "\n\t\t\tSUB AL, " + op2 + "\n\t\t\tMOV t" + tAct + ", AL\n";
                                 break;
                             case "*":
                                 op1 = listaAuxoperandos.Pop();
                                 op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\t\t\tMULTI " + op1 + ", " + op2 + ", t" + tAct + "\n";
+                                cadena_ensamblador += "\t\t\tMOV AL, " + op1 + "\n\t\t\tMOV BL, " + op2 + "\n\t\t\tIMUL BL \n\t\t\tMOV t" + tAct + ", AL\n";
                                 break;
                             case "/":
                                 op1 = listaAuxoperandos.Pop();
                                 op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\t\t\tDIVIDE " + op1 + ", " + op2 + ", t" + tAct + "\n";
+                                cadena_ensamblador += "\t\t\tMOV DX, 0 \n\t\t\tMOV AL, " + op1 + "\n\t\t\tMOV BL, " + op2 + "\n\t\t\tIDIV BL \n\t\t\tMOV t" + tAct + ", AL\n";
                                 break;
                             case "=":
                                 op1 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\t\t\tI_ASIGNAR " + op1 + ", t" + tAct + "\n";
+                                op2 = listaAuxoperandos.Pop();
+                                cadena_ensamblador += "\t\t\tMOV AL, " + op2 + "\n\t\t\tMOV " + op1 + ", AL\n";
                                 tAct++;
                                 break;
                             case "read":

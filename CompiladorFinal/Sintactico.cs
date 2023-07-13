@@ -332,7 +332,7 @@ namespace CompiladorFinal
             if (condicionIf == true)
             {
                 direccion = "A" + iteradorIF;
-                ifListSolved++;
+                
             }
             else if (condicionWhile == true)
             {
