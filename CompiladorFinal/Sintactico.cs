@@ -54,9 +54,9 @@ namespace CompiladorFinal
             else if (listaToken[posicion].ValorToken == -1)
             {
                 int posicionActual = posicion;
+                verificarVariables(listaToken, posicion);
                 posicion = verificarOperador(listaToken, posicion);
                 
-
                 if (listaError.Count == 0)
                 {
                     agregarPostfijo(listaToken, posicionActual);
@@ -95,6 +95,17 @@ namespace CompiladorFinal
             }
             vueltaAux = vuelta + 1;
             return posicion;
+        }
+
+        public void verificarVariables (List<Token> listaToken, int posicion)
+        {
+            for (int i = 0; i < listaVariables.Count; i++)
+            {
+                if (listaVariables[i].Lexema == listaToken[posicion].Lexema)
+                {
+                    listaVariables[i].Usada = true;
+                }
+            }
         }
 
         public int crearVariable(List<Token> listaToken, int posicion)
@@ -553,7 +564,7 @@ namespace CompiladorFinal
                 {
                     if (lexema == listaVariables[i].Lexema)
                     {
-                        
+                        listaVariables[i].Usada = true;
                         break;
                     }
                     if (i + 1 == listaVariables.Count)
