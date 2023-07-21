@@ -10,6 +10,7 @@ namespace CompiladorFinal
     {
         private string lexema;
         private int tipoVariable;
+        private bool usada;
 
         public string Lexema
         {
@@ -36,5 +37,19 @@ namespace CompiladorFinal
                 tipoVariable = value;
             }
         }
+        public bool Usada
+        {
+            get
+            {
+                return usada;
+            }
+
+            set
+            {
+                usada = value;
+            }
+        }
+
     }
+
 }
