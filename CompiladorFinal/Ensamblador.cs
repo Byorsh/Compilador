@@ -127,7 +127,7 @@ namespace CompiladorFinal
                             default:
                                 if (listaPolish[i].Salto != null)
                                 {
-                                    cadena_ensamblador += "\t" + listaPolish[i].Salto + ":\n";
+                                    cadena_ensamblador += "\n\t" + listaPolish[i].Salto + ":\n";
                                 }
                                 listaAuxoperandos.Push(listaPolish[i].Lexema);
                                 break;

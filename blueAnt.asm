@@ -24,6 +24,7 @@ CALL COMPI
 		MOV AX, 4C00H
 		INT 21H
 COMPI PROC
+
 			MOV AL, x
 			MOV 1, AL
 			MOV AL, y
@@ -42,6 +43,7 @@ COMPI PROC
 		SALIR:
 
 		JF t3, W1
+
 	X2:
 
 		LOCAL LABEL1 
@@ -69,6 +71,7 @@ COMPI PROC
 		SALIR:
 
 		JF t5, A1
+
 			MOV AL, x
 			MOV 2, AL
 			MOV AL, y
@@ -87,6 +90,7 @@ COMPI PROC
 		SALIR:
 
 		JF t8, A2
+
 			MOV AL, x
 			MOV 2, AL
 			MOV AL, y
@@ -98,9 +102,12 @@ COMPI PROC
 
 
 		JMP X1
+
 	W2:
+
 	W1:
 
 	ret
-COMPI ENDP
+MOV AH, 4cH
+INT 21H
 END BEGIN
