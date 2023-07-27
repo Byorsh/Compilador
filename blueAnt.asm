@@ -1,8 +1,7 @@
 ;/StartHeader
-INCLUDE macros.mac
-DOSSEG
+include macros.asm
 .MODEL SMALL
-STACK 100h
+.STACK 100h
 .DATA
 		a DW '', '$' 
 		b DW '', '$' 
@@ -10,7 +9,7 @@ STACK 100h
 		t2 DW '' ? 
 		t3 DW '' ? 
 .CODE
-.386
+
 BEGIN:
 		MOV AX, @DATA
 		MOV DS, AX
@@ -40,6 +39,7 @@ COMPI PROC
 			MOV 1, AL	A1:
 
 	ret
+END BEGIN
 MOV AH, 4cH
 INT 21H
-END BEGIN
+END 

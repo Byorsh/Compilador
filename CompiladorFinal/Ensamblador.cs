@@ -16,116 +16,196 @@ namespace CompiladorFinal
         Stack<string> listaAuxoperandos = new Stack<string>();
         string op1, op2;
         int tAct = 1;
+        bool opActiva = false;
         
 
         public void crearDocumentoEnsamblador(List<Variable> listaVariables, List<Polish> listaPolish, int totalT)
         {
             try
             {
-                string filename = @"C:\Users\Abeled\Desktop\Compilador\Compilador\blue.asm";
+                string filename = @"C:\Users\Jorge Barraza\Documents\compi\CompiladorFinal\blue.asm";
                 using (StreamWriter mylogs = File.CreateText(filename))
                 {
-                    cadena_ensamblador = ";/StartHeader\nINCLUDE macros.mac\nDOSSEG\n.MODEL SMALL\nSTACK 100h\n.DATA\n";
+                    cadena_ensamblador = ";/StartHeader\nINCLUDE macros.asm\n.MODEL SMALL\n.STACK 100h\n.DATA\n";
                     for (int i = 0; i < listaVariables.Count; i++)
                     {
                         if (listaVariables[i].Usada == true)
                         {
-                            cadena_ensamblador += "\t\t" + listaVariables[i].Lexema + " DW '', '$' \n";
+                            switch (listaVariables[i].TipoVariable)
+                            {
+                                case -55:
+                                    cadena_ensamblador += "\t\t" + listaVariables[i].Lexema + " DW '', '$' \n";
+                                    break;
+                                case -58:
+                                    cadena_ensamblador += "\t\t" + listaVariables[i].Lexema + " DW , '', '$' \n";
+                                    break;
+                                case -56:
+                                    cadena_ensamblador += "\t\t" + listaVariables[i].Lexema + " DB '0' \n";
+                                    break;
+                                case -57:
+                                    cadena_ensamblador += "\t\t" + listaVariables[i].Lexema + " DD \n";
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
                     for (int i = 1; i < totalT; i++)
                     {
                         cadena_ensamblador += "\t\tt" + i + " DW '' ? \n";
                     }
-                    cadena_ensamblador += ".CODE\n.386\nBEGIN:\n\t\tMOV AX, @DATA\n\t\tMOV DS, AX\nCALL COMPI\n\t\tMOV AX, 4C00H\n\t\tINT 21H\nCOMPI PROC\n";
+                    cadena_ensamblador += ".CODE\nBEGIN:\n\t\tMOV AX, @DATA\n\t\tMOV DS, AX\nCALL COMPI\n\t\tMOV AX, 4C00H\n\t\tINT 21H\nCOMPI PROC\n";
 
                     for (int i = 0; i < listaPolish.Count; i++)
                     {
                         switch (listaPolish[i].Lexema)
                         {
                             case "+":
-                                op1 = listaAuxoperandos.Pop();
-                                op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\n\t\t\tMOV AL, " + op1 + "\n\t\t\tADD AL, " + op2 + "\n\t\t\tMOV t" + tAct + ", AL";
+                                if (opActiva == false)
+                                {
+                                    op1 = listaAuxoperandos.Pop();
+                                    op2 = listaAuxoperandos.Pop();
+                                    cadena_ensamblador += "\n\t\t\tSUMAR " + op2 + ", " + op1 + ", t" + tAct + "\n";
+                                    tAct++;
+                                    opActiva = true;
+                                }
+                                else
+                                {
+                                    op1 = listaAuxoperandos.Pop();
+                                    cadena_ensamblador += "\n\t\t\tSUMAR " + op1 + ", t" + (tAct - 1) + ", t" + tAct + "\n";
+                                    tAct++;
+                                }
                                 break;
                             case "-":
-                                op1 = listaAuxoperandos.Pop();
-                                op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\n\t\t\tMOV AL, " + op1 + "\n\t\t\tSUB AL, " + op2 + "\n\t\t\tMOV t" + tAct + ", AL";
+                                if (opActiva == false)
+                                {
+                                    op1 = listaAuxoperandos.Pop();
+                                    op2 = listaAuxoperandos.Pop();
+                                    cadena_ensamblador += "\n\t\t\tRESTA " + op2 + ", " + op1 + ", t" + tAct + "\n";
+                                    tAct++;
+                                    opActiva = true;
+                                }
+                                else
+                                {
+                                    op1 = listaAuxoperandos.Pop();
+                                    cadena_ensamblador += "\n\t\t\tRESTA " + op1 + ", t" + (tAct - 1) + ", t" + tAct + "\n";
+                                    tAct++;
+                                }
                                 break;
                             case "*":
-                                op1 = listaAuxoperandos.Pop();
-                                op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\n\t\t\tMOV AL, " + op1 + "\n\t\t\tMOV BL, " + op2 + "\n\t\t\tIMUL BL \n\t\t\tMOV t" + tAct + ", AL";
+                                if (opActiva == false)
+                                {
+                                    op1 = listaAuxoperandos.Pop();
+                                    op2 = listaAuxoperandos.Pop();
+                                    cadena_ensamblador += "\n\t\t\tMULTI " + op2 + ", " + op1 + ", t" + tAct + "\n";
+                                    tAct++;
+                                    opActiva = true;
+                                }
+                                else
+                                {
+                                    op1 = listaAuxoperandos.Pop();
+                                    cadena_ensamblador += "\n\t\t\tMULTI " + op1 + ", t" + (tAct - 1) + ", t" + tAct + "\n";
+                                    tAct++;
+                                }
                                 break;
                             case "/":
-                                op1 = listaAuxoperandos.Pop();
-                                op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\n\t\t\tMOV DX, 0 \n\t\t\tMOV AL, " + op1 + "\n\t\t\tMOV BL, " + op2 + "\n\t\t\tIDIV BL \n\t\t\tMOV t" + tAct + ", AL";
+                                if (opActiva == false)
+                                {
+                                    op1 = listaAuxoperandos.Pop();
+                                    op2 = listaAuxoperandos.Pop();
+                                    cadena_ensamblador += "\n\t\t\tDIVIDE " + op2 + ", " + op1 + ", t" + tAct + "\n";
+                                    tAct++;
+                                    opActiva = true;
+                                }
+                                else
+                                {
+                                    op1 = listaAuxoperandos.Pop();
+                                    cadena_ensamblador += "\n\t\t\tDIVIDE " + op1 + ", t" + (tAct - 1) + ", t" + tAct + "\n";
+                                    tAct++;
+                                }
                                 break;
                             case "=":
-                                op1 = listaAuxoperandos.Pop();
-                                op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\n\t\t\tMOV AL, " + op2 + "\n\t\t\tMOV " + op1 + ", AL";
-                                tAct++;
+                                if (opActiva == false)
+                                {
+                                    op1 = listaAuxoperandos.Pop();
+                                    op2 = listaAuxoperandos.Pop();
+                                    cadena_ensamblador += "\n\t\t\tI_ASIGNAR " + op2 + ", " + op1 + "\n";
+                                }
+                                else
+                                {
+                                    op1 = listaAuxoperandos.Pop();
+                                    cadena_ensamblador += "\n\t\t\tI_ASIGNAR " + op1 + ", t" + (tAct - 1) + "\n";
+                                }
+                                
+                                opActiva = false;
                                 break;
                             case "read":
                                 op1 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\n\t\t\tMOV DX, OFFSET " + op1 + "\n\t\t\tMOV AH, 3FH" + "\n\t\t\tINT 21H";
+                                for (int j = 0; j < listaVariables.Count; j++)
+                                {
+                                    if (op1 == listaVariables[j].Lexema)
+                                    {
+                                        switch (listaVariables[j].TipoVariable)
+                                        {
+                                            case -55:
+                                            case -57:
+                                                cadena_ensamblador += "\t\t\treadinteger@ " + op1 + "\n";
+                                                break;
+                                            case -58:
+                                            case -56:
+                                                cadena_ensamblador += "\t\t\treadstring@ " + op1 + "\n";
+                                                break;
+                                        }
+                                    }
+                                }
                                 break;
                             case "write":
                                 op1 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\n\t\t\tMOV AH, 09H" + "\n\t\t\tLEA DL, " + op1 + "\n\t\t\tINT 21H";
+                                cadena_ensamblador += "\t\t\tWRITE " + op1 + "\n";
                                 break;
                             case ">":
                                 op1 = listaAuxoperandos.Pop();
                                 op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\n\t\tLOCAL LABEL1 " + "\n\t\tLOCAL SALIR "
-                                    + "\n\t\t\tMOV AL, " + op1 + "\n\t\t\tCMP AL, " + op2 + "\n\t\t\tJLE LABEL1" + "\n\t\t\tMOV t" + tAct + " 1" 
-                                    + "\n\t\t\tJMP SALIR" + "\n\t\tLABEL1: " + "\n\t\t\tMOV t" + tAct + ", 0" + "\n\t\tSALIR:";
+                                cadena_ensamblador += "\t\t\tI_MAYOR " + op2 + ", " + op1 + ", t" + tAct + "\n";
+                                tAct++;
                                 break;
                             case "<":
                                 op1 = listaAuxoperandos.Pop();
                                 op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\n\t\tLOCAL LABEL1 " + "\n\t\tLOCAL SALIR "
-                                    + "\n\t\t\tMOV AL, " + op1 + "\n\t\t\tCMP AL, " + op2 + "\n\t\t\tJGE LABEL1" + "\n\t\t\tMOV t" + tAct + " 1"
-                                    + "\n\t\t\tJMP SALIR" + "\n\t\tLABEL1: " + "\n\t\t\tMOV t" + tAct + ", 0" + "\n\t\tSALIR:";
+                                cadena_ensamblador += "\t\t\tI_MENOR " + op2 + ", " + op1 + ", t" + tAct + "\n";
+                                tAct++;
                                 break;
                             case "<=":
                                 op1 = listaAuxoperandos.Pop();
                                 op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\n\t\tLOCAL LABEL1 " + "\n\t\tLOCAL SALIR "
-                                    + "\n\t\t\tMOV AL, " + op1 + "\n\t\t\tCMP AL, " + op2 + "\n\t\t\tJG LABEL1" + "\n\t\t\tMOV t" + tAct + " 1"
-                                    + "\n\t\t\tJMP SALIR" + "\n\t\tLABEL1: " + "\n\t\t\tMOV t" + tAct + ", 0" + "\n\t\tSALIR:";
+                                cadena_ensamblador += "\t\t\tI_MENORIGUAL " + op2 + ", " + op1 + ", t" + tAct + "\n";
+                                tAct++;
                                 break;
                             case ">=":
                                 op1 = listaAuxoperandos.Pop();
                                 op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\n\t\tLOCAL LABEL1 " + "\n\t\tLOCAL SALIR "
-                                    + "\n\t\t\tMOV AL, " + op1 + "\n\t\t\tCMP AL, " + op2 + "\n\t\t\tJL LABEL1" + "\n\t\t\tMOV t" + tAct + " 1"
-                                    + "\n\t\t\tJMP SALIR" + "\n\t\tLABEL1: " + "\n\t\t\tMOV t" + tAct + ", 0" + "\n\t\tSALIR:";
+                                cadena_ensamblador += "\t\t\tI_MAYORIGUAL " + op2 + ", " + op1 + ", t" + tAct + "\n";
+                                tAct++;
                                 break;
                             case "==":
                                 op1 = listaAuxoperandos.Pop();
                                 op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\n\t\tLOCAL LABEL1 " + "\n\t\tLOCAL SALIR "
-                                    + "\n\t\t\tMOV AL, " + op1 + "\n\t\t\tCMP AL, " + op2 + "\n\t\t\tJNE LABEL1" + "\n\t\t\tMOV t" + tAct + " 1"
-                                    + "\n\t\t\tJMP SALIR" + "\n\t\tLABEL1: " + "\n\t\t\tMOV t" + tAct + ", 0" + "\n\t\tSALIR:";
+                                cadena_ensamblador += "\t\t\tI_IGUAL " + op2 + ", " + op1 + ", t" + tAct + "\n";
+                                tAct++;
                                 break;
                             case "!=":
                                 op1 = listaAuxoperandos.Pop();
                                 op2 = listaAuxoperandos.Pop();
-                                cadena_ensamblador += "\n\t\tLOCAL LABEL1 " + "\n\t\tLOCAL SALIR "
-                                    + "\n\t\t\tMOV AL, " + op1 + "\n\t\t\tCMP AL, " + op2 + "\n\t\t\tJE LABEL1" + "\n\t\t\tMOV t" + tAct + " 1"
-                                    + "\n\t\t\tJMP SALIR" + "\n\t\tLABEL1: " + "\n\t\t\tMOV t" + tAct + ", 0" + "\n\t\tSALIR:";
+                                cadena_ensamblador += "\t\t\tI_DIFERENTES " + op1 + ", " + op2 + ", t" + tAct + "\n";
+                                tAct++;
                                 break;
                             case "BRF":
-                                cadena_ensamblador += "\n\n\t\tJF t" + tAct + ", " + listaPolish[i].Direccionamiento + "\n";
-                                tAct++;
+                                cadena_ensamblador += "\n\n\t\tJF t" + (tAct - 1) + ", " + listaPolish[i].Direccionamiento + "\n";
+                                
                                 break;
                             case "BRI":
                                 cadena_ensamblador += "\n\n\t\tJMP " + listaPolish[i].Direccionamiento + "\n";
-                                tAct++;
+                                
                                 break;
                             default:
                                 if (listaPolish[i].Salto != null)
@@ -136,7 +216,7 @@ namespace CompiladorFinal
                                 break;
                         }
                     }
-                    cadena_ensamblador += "\n\tret\nMOV AH, 4cH\nINT 21H\nEND BEGIN";
+                    cadena_ensamblador += "\n\tret\nCOMPI ENDP\nEND BEGIN";
                     mylogs.WriteLine(cadena_ensamblador);
                     mylogs.Close();
                 }

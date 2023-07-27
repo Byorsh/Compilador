@@ -16,7 +16,7 @@ namespace CompiladorFinal
         public List<int> listaPostfixToken = new List<int>();
         public List<int> listaAuxPostfixToken = new List<int>();
         public List<Polish> listaPolish = new List<Polish>();
-        public int totalT = 0;
+        public int totalT;
         int tokenTipo, vueltaAux, iteradorIF = 0, iteradorWhile = 0;
         int ifList = 0, ifListSolved = 0;
         string lexema, stringR, stringW, direccion, saltoActual;
@@ -39,7 +39,7 @@ namespace CompiladorFinal
                 condicionIf = false;
                 condicionWhile = false;
                 condicionElse = false;
-                totalT = 0;
+                totalT = 1;
                 ifList = 0;
                 ifListSolved = 0;
 
@@ -167,6 +167,7 @@ namespace CompiladorFinal
             iteradorIF++;
             ifList++;
             posicion++;
+            totalT++;
             //(
             if (listaToken[posicion].ValorToken == -27)
             {
@@ -276,6 +277,7 @@ namespace CompiladorFinal
             iteradorWhile++;
             int itWhileAux = iteradorWhile;
             posicion++;
+            totalT++;
             //(
             if (listaToken[posicion].ValorToken == -27)
             {
@@ -374,6 +376,7 @@ namespace CompiladorFinal
                     if (listaToken[posicion].ValorToken == -19 || listaToken[posicion].ValorToken == -20 || listaToken[posicion].ValorToken == -21 ||
                         listaToken[posicion].ValorToken == -22 || listaToken[posicion].ValorToken == -23 || listaToken[posicion].ValorToken == -24)
                     {
+                        
                         operador = listaToken[posicion].ValorToken;
                         string operadorAux = listaToken[posicion].Lexema;
 
@@ -402,6 +405,7 @@ namespace CompiladorFinal
                         listaTokens.Add(operador);
 
                         listaLexemas.Add(operadorAux);
+                        
                     }
 
                     //{
@@ -414,7 +418,7 @@ namespace CompiladorFinal
                 int auxP = posicion;
                 verificarTipos(listaTokens, listaLexemas, listaToken[auxP - 1].Linea); 
             }
-            totalT++;
+            
             return posicion + 1;
         }
 
@@ -444,7 +448,7 @@ namespace CompiladorFinal
                         //+, -, *, /
                         if (listaToken[posicion].ValorToken == -6 || listaToken[posicion].ValorToken == -7 || listaToken[posicion].ValorToken == -8 || listaToken[posicion].ValorToken == -9)
                         {
-
+                            totalT++;
                             posicion++;
                             // identificador, num entero, num decimal, string, char
                             if (listaToken[posicion].ValorToken == -1 || listaToken[posicion].ValorToken == -2 || listaToken[posicion].ValorToken == -3 || listaToken[posicion].ValorToken == -4 || listaToken[posicion].ValorToken == -5)
@@ -716,7 +720,7 @@ namespace CompiladorFinal
                                     listaAuxPostfix.Remove(ultimoperdadorlistaAux); listaAuxPostfixToken.Remove(ultimotokenlistaAux);
 
                                     listaAuxPostfix.Add(lexema); listaAuxPostfixToken.Add(valortoken);
-
+                                    
                                 }
                                 else
                                 {
@@ -759,7 +763,7 @@ namespace CompiladorFinal
 
                         }
                     }
-                    totalT++;
+                    
 
                 }
                 posicion++;
@@ -835,7 +839,7 @@ namespace CompiladorFinal
          //      int  || char || string || double ||  bool
 /*int*/     {    -2   ,  -512  ,   -512  ,   -3    ,   -512,},
 /*char*/    {    -512 ,  -512  ,   -512  ,   -512  ,   -512,},
-/*string*/  {    -512 ,  -512  ,   -512  ,   -512  ,   -512,},
+/*string*/  {    -512 ,  -512  ,   -4    ,   -512  ,   -512,},
 /*double*/  {    -512 ,  -512  ,   -512  ,   -3    ,   -512,},
 /*bool*/    {    -512 ,  -512  ,   -512  ,   -512  ,   -512,}
         };
